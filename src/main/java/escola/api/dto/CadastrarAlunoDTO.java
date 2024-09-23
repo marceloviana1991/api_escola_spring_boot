@@ -1,4 +1,9 @@
 package escola.api.dto;
 
-public record CadastrarAlunoDTO(String nome) {
+import jakarta.validation.constraints.NotBlank;
+
+public record CadastrarAlunoDTO(
+        @NotBlank
+        String nome
+) {
 }
