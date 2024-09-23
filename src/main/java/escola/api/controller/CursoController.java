@@ -4,6 +4,7 @@ import escola.api.dto.CadastrarCursoDTO;
 import escola.api.model.Curso;
 import escola.api.repository.CursoRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +20,7 @@ public class CursoController {
 
     @PostMapping
     @Transactional
-    public void cadastrarCurso(@RequestBody CadastrarCursoDTO cadastrarCursoDTO) {
+    public void cadastrarCurso(@RequestBody @Valid CadastrarCursoDTO cadastrarCursoDTO) {
         cursoRepository.save(new Curso(cadastrarCursoDTO));
     }
 }

@@ -8,6 +8,7 @@ import escola.api.repository.AlunoRepository;
 import escola.api.repository.CursoRepository;
 import escola.api.repository.MatriculaRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,7 +30,7 @@ public class MatriculaController {
 
     @PostMapping
     @Transactional
-    public void cadastrarMatricula(@RequestBody CadastrarMatriculaDTO cadastrarMatriculaDTO) {
+    public void cadastrarMatricula(@RequestBody @Valid CadastrarMatriculaDTO cadastrarMatriculaDTO) {
         Optional<Curso> curso = cursoRepository.findById(cadastrarMatriculaDTO.cursoId());
         Optional<Aluno> aluno = alunoRepository.findById(cadastrarMatriculaDTO.alunoId());
         if (aluno.isPresent() && curso.isPresent()) {

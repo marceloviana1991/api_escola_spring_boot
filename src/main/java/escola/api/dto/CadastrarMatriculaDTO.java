@@ -1,4 +1,10 @@
 package escola.api.dto;
 
-public record CadastrarMatriculaDTO(Long alunoId, Long cursoId) {
+import jakarta.validation.constraints.NotNull;
+
+public record CadastrarMatriculaDTO(
+        @NotNull
+        Long alunoId,
+        @NotNull
+        Long cursoId) {
 }
