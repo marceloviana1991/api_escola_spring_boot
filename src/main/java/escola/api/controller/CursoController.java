@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Optional;
 
@@ -24,27 +26,34 @@ public class CursoController {
 
     @PostMapping
     @Transactional
-    public void cadastrarCurso(@RequestBody @Valid CadastroCursoDTO cadastroCursoDTO) {
-        cursoRepository.save(new Curso(cadastroCursoDTO));
+    public ResponseEntity<CadastroCursoDTO> cadastrarCurso(@RequestBody @Valid CadastroCursoDTO cadastroCursoDTO,
+                                                           UriComponentsBuilder uriComponentsBuilder) {
+        Curso curso = new Curso(cadastroCursoDTO);
+        cursoRepository.save(curso);
+        var uri = uriComponentsBuilder.path("/cursos/{id}").buildAndExpand(curso.getId()).toUri();
+        return ResponseEntity.created(uri).body(cadastroCursoDTO);
     }
 
     @GetMapping
-    public Page<ListagemCursoDTO> listarCursos(@PageableDefault(size = 30) Pageable pageable) {
-        return cursoRepository.findAll(pageable).map(curso -> new ListagemCursoDTO(
+    public ResponseEntity<Page<ListagemCursoDTO>> listarCursos(@PageableDefault(size = 30) Pageable pageable) {
+        Page<ListagemCursoDTO> listagemCursoDTOPage = cursoRepository.findAll(pageable).map(curso -> new ListagemCursoDTO(
                 curso.getId(), curso.getNome(), curso.getTurno(), curso.getDataInicio(), curso.getDataTermino()));
+        return ResponseEntity.ok(listagemCursoDTOPage);
     }
 
     @PutMapping
     @Transactional
-    public void atualizarCurso(@RequestBody @Valid AtualizacaoCursoDTO atualizacaoCursoDTO) {
+    public ResponseEntity<AtualizacaoCursoDTO> atualizarCurso(@RequestBody @Valid AtualizacaoCursoDTO atualizacaoCursoDTO) {
         Optional<Curso> cursoOptional = cursoRepository.findById(atualizacaoCursoDTO.id());
         cursoOptional.ifPresent(curso -> curso.atualizarInformacoes(atualizacaoCursoDTO));
+        return ResponseEntity.ok(atualizacaoCursoDTO);
     }
 
     @DeleteMapping("/{id}")
     @Transactional
-    public void excluirCurso(@PathVariable Long id) {
+    public ResponseEntity<?> excluirCurso(@PathVariable Long id) {
         cursoRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
