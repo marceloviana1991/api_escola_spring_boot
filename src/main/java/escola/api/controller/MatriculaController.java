@@ -1,6 +1,7 @@
 package escola.api.controller;
 
 import escola.api.dto.CadastrarMatriculaDTO;
+import escola.api.dto.ListarMatriculaDTO;
 import escola.api.model.Aluno;
 import escola.api.model.Curso;
 import escola.api.model.Matricula;
@@ -10,11 +11,9 @@ import escola.api.repository.MatriculaRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -36,5 +35,12 @@ public class MatriculaController {
         if (aluno.isPresent() && curso.isPresent()) {
             matriculaRepository.save(new Matricula(aluno.get(), curso.get()));
         }
+    }
+
+    @GetMapping
+    public List<ListarMatriculaDTO> listarMatriculas() {
+        return matriculaRepository.findAll().stream().map(
+                matricula -> new ListarMatriculaDTO(matricula.getId(), matricula.getAluno().getNome(),
+                        matricula.getCurso().getNome(), matricula.getCurso().getTurno())).toList();
     }
 }
