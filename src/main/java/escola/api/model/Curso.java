@@ -1,5 +1,6 @@
 package escola.api.model;
 
+import escola.api.dto.AtualizacaoCursoDTO;
 import escola.api.dto.CadastroCursoDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -41,4 +42,18 @@ public class Curso {
         this.dataTermino = LocalDate.from(formatador.parse(dataTermino));
     }
 
+    public void atualizarInformacoes(AtualizacaoCursoDTO atualizacaoCursoDTO) {
+        if (atualizacaoCursoDTO.nome() != null) {
+            this.nome = atualizacaoCursoDTO.nome();
+        }
+        if (atualizacaoCursoDTO.turno() != null) {
+            this.turno = atualizacaoCursoDTO.turno();
+        }
+        if (atualizacaoCursoDTO.dataInicio() != null) {
+            this.setDataInicio(atualizacaoCursoDTO.dataInicio());
+        }
+        if (atualizacaoCursoDTO.dataTermino() != null) {
+            this.setDataTermino(atualizacaoCursoDTO.dataTermino());
+        }
+    }
 }

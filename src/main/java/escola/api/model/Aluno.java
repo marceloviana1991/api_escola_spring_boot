@@ -1,5 +1,6 @@
 package escola.api.model;
 
+import escola.api.dto.AtualizacaoAlunoDTO;
 import escola.api.dto.CadastroAlunoDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,4 +23,9 @@ public class Aluno {
         this.nome = cadastroAlunoDTO.nome();
     }
 
+    public void atualizarInformacoes(AtualizacaoAlunoDTO atualizacaoAlunoDTO) {
+        if (atualizacaoAlunoDTO != null) {
+            this.nome = atualizacaoAlunoDTO.nome();
+        }
+    }
 }

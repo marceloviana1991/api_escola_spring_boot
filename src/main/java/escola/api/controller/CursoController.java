@@ -1,5 +1,6 @@
 package escola.api.controller;
 
+import escola.api.dto.AtualizacaoCursoDTO;
 import escola.api.dto.CadastroCursoDTO;
 import escola.api.dto.ListagemCursoDTO;
 import escola.api.model.Curso;
@@ -11,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/cursos")
@@ -30,4 +33,12 @@ public class CursoController {
         return cursoRepository.findAll(pageable).map(curso -> new ListagemCursoDTO(
                 curso.getId(), curso.getNome(), curso.getTurno(), curso.getDataInicio(), curso.getDataTermino()));
     }
+
+    @PutMapping
+    @Transactional
+    public void atualizarCuso(@RequestBody @Valid AtualizacaoCursoDTO atualizacaoCursoDTO) {
+        Optional<Curso> cursoOptional = cursoRepository.findById(atualizacaoCursoDTO.id());
+        cursoOptional.ifPresent(curso -> curso.atualizarInformacoes(atualizacaoCursoDTO));
+    }
+
 }
