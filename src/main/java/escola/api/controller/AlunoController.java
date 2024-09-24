@@ -1,7 +1,7 @@
 package escola.api.controller;
 
-import escola.api.dto.CadastrarAlunoDTO;
-import escola.api.dto.ListarAlunoDTO;
+import escola.api.dto.CadastroAlunoDTO;
+import escola.api.dto.ListagemAlunoDTO;
 import escola.api.model.Aluno;
 import escola.api.repository.AlunoRepository;
 import jakarta.transaction.Transactional;
@@ -21,12 +21,12 @@ public class AlunoController {
 
     @PostMapping
     @Transactional
-    public void cadastrarAluno(@RequestBody @Valid CadastrarAlunoDTO cadastrarAlunoDTO) {
-        alunoRepository.save(new Aluno(cadastrarAlunoDTO));
+    public void cadastrarAluno(@RequestBody @Valid CadastroAlunoDTO cadastroAlunoDTO) {
+        alunoRepository.save(new Aluno(cadastroAlunoDTO));
     }
 
     @GetMapping
-    public Page<ListarAlunoDTO> listarAlunos(@PageableDefault(size = 30) Pageable pageable) {
-        return alunoRepository.findAll(pageable).map(aluno -> new ListarAlunoDTO(aluno.getId(), aluno.getNome()));
+    public Page<ListagemAlunoDTO> listarAlunos(@PageableDefault(size = 30) Pageable pageable) {
+        return alunoRepository.findAll(pageable).map(aluno -> new ListagemAlunoDTO(aluno.getId(), aluno.getNome()));
     }
 }

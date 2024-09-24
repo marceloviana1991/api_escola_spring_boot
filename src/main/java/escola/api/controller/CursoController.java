@@ -1,7 +1,7 @@
 package escola.api.controller;
 
-import escola.api.dto.CadastrarCursoDTO;
-import escola.api.dto.ListarCursoDTO;
+import escola.api.dto.CadastroCursoDTO;
+import escola.api.dto.ListagemCursoDTO;
 import escola.api.model.Curso;
 import escola.api.repository.CursoRepository;
 import jakarta.transaction.Transactional;
@@ -21,13 +21,13 @@ public class CursoController {
 
     @PostMapping
     @Transactional
-    public void cadastrarCurso(@RequestBody @Valid CadastrarCursoDTO cadastrarCursoDTO) {
-        cursoRepository.save(new Curso(cadastrarCursoDTO));
+    public void cadastrarCurso(@RequestBody @Valid CadastroCursoDTO cadastroCursoDTO) {
+        cursoRepository.save(new Curso(cadastroCursoDTO));
     }
 
     @GetMapping
-    public Page<ListarCursoDTO> listarCursos(@PageableDefault(size = 30) Pageable pageable) {
-        return cursoRepository.findAll(pageable).map(curso -> new ListarCursoDTO(
+    public Page<ListagemCursoDTO> listarCursos(@PageableDefault(size = 30) Pageable pageable) {
+        return cursoRepository.findAll(pageable).map(curso -> new ListagemCursoDTO(
                 curso.getId(), curso.getNome(), curso.getTurno(), curso.getDataInicio(), curso.getDataTermino()));
     }
 }

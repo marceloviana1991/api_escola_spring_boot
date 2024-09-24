@@ -1,6 +1,6 @@
 package escola.api.model;
 
-import escola.api.dto.CadastrarCursoDTO;
+import escola.api.dto.CadastroCursoDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -26,11 +26,11 @@ public class Curso {
     private LocalDate dataTermino;
     static private final DateTimeFormatter formatador = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public Curso(CadastrarCursoDTO cadastrarCursoDTO) {
-        this.nome = cadastrarCursoDTO.nome();
-        this.turno = cadastrarCursoDTO.turno();
-        this.setDataInicio(cadastrarCursoDTO.dataInicio());
-        this.setDataTermino(cadastrarCursoDTO.dataTermino());
+    public Curso(CadastroCursoDTO cadastroCursoDTO) {
+        this.nome = cadastroCursoDTO.nome();
+        this.turno = cadastroCursoDTO.turno();
+        this.setDataInicio(cadastroCursoDTO.dataInicio());
+        this.setDataTermino(cadastroCursoDTO.dataTermino());
     }
 
     public void setDataInicio(String dataInicio) {

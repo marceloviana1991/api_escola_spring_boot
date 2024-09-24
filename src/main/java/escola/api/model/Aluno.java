@@ -1,6 +1,6 @@
 package escola.api.model;
 
-import escola.api.dto.CadastrarAlunoDTO;
+import escola.api.dto.CadastroAlunoDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -18,8 +18,8 @@ public class Aluno {
     private Long id;
     private String nome;
 
-    public Aluno(CadastrarAlunoDTO cadastrarAlunoDTO) {
-        this.nome = cadastrarAlunoDTO.nome();
+    public Aluno(CadastroAlunoDTO cadastroAlunoDTO) {
+        this.nome = cadastroAlunoDTO.nome();
     }
 
 }

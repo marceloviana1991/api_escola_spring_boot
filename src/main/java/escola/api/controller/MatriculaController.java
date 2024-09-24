@@ -1,7 +1,7 @@
 package escola.api.controller;
 
-import escola.api.dto.CadastrarMatriculaDTO;
-import escola.api.dto.ListarMatriculaDTO;
+import escola.api.dto.CadastroMatriculaDTO;
+import escola.api.dto.ListagemMatriculaDTO;
 import escola.api.model.Aluno;
 import escola.api.model.Curso;
 import escola.api.model.Matricula;
@@ -31,24 +31,24 @@ public class MatriculaController {
 
     @PostMapping
     @Transactional
-    public void cadastrarMatricula(@RequestBody @Valid CadastrarMatriculaDTO cadastrarMatriculaDTO) {
-        Optional<Curso> curso = cursoRepository.findById(cadastrarMatriculaDTO.cursoId());
-        Optional<Aluno> aluno = alunoRepository.findById(cadastrarMatriculaDTO.alunoId());
+    public void cadastrarMatricula(@RequestBody @Valid CadastroMatriculaDTO cadastroMatriculaDTO) {
+        Optional<Curso> curso = cursoRepository.findById(cadastroMatriculaDTO.cursoId());
+        Optional<Aluno> aluno = alunoRepository.findById(cadastroMatriculaDTO.alunoId());
         if (aluno.isPresent() && curso.isPresent()) {
             matriculaRepository.save(new Matricula(aluno.get(), curso.get()));
         }
     }
 
     @GetMapping
-    public Page<ListarMatriculaDTO> listarMatriculas(@PageableDefault(size = 30) Pageable pageable,
-                                                     @RequestParam(value = "cursoId", required = false) Long cursoId) {
+    public Page<ListagemMatriculaDTO> listarMatriculas(@PageableDefault(size = 30) Pageable pageable,
+                                                       @RequestParam(value = "cursoId", required = false) Long cursoId) {
         if (cursoId != null) {
             return matriculaRepository.findAllBycursoId(cursoId, pageable).map(
-                    matricula -> new ListarMatriculaDTO(matricula.getId(), matricula.getAluno().getNome(),
+                    matricula -> new ListagemMatriculaDTO(matricula.getId(), matricula.getAluno().getNome(),
                             matricula.getCurso().getNome(), matricula.getCurso().getTurno()));
         }
         return matriculaRepository.findAll(pageable).map(
-                matricula -> new ListarMatriculaDTO(matricula.getId(), matricula.getAluno().getNome(),
+                matricula -> new ListagemMatriculaDTO(matricula.getId(), matricula.getAluno().getNome(),
                         matricula.getCurso().getNome(), matricula.getCurso().getTurno()));
     }
 }

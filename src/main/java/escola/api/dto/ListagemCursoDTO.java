@@ -4,7 +4,7 @@ import escola.api.model.Turno;
 
 import java.time.LocalDate;
 
-public record ListarCursoDTO(
+public record ListagemCursoDTO(
         Long id,
         String nome,
         Turno turno,
