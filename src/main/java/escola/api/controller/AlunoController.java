@@ -7,9 +7,10 @@ import escola.api.repository.AlunoRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/alunos")
@@ -25,7 +26,7 @@ public class AlunoController {
     }
 
     @GetMapping
-    public List<ListarAlunoDTO> listarAlunos() {
-        return alunoRepository.findAll().stream().map(aluno -> new ListarAlunoDTO(aluno.getId(), aluno.getNome())).toList();
+    public Page<ListarAlunoDTO> listarAlunos(@PageableDefault(size = 30) Pageable pageable) {
+        return alunoRepository.findAll(pageable).map(aluno -> new ListarAlunoDTO(aluno.getId(), aluno.getNome()));
     }
 }

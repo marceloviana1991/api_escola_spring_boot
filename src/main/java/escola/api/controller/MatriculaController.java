@@ -11,9 +11,11 @@ import escola.api.repository.MatriculaRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -38,9 +40,15 @@ public class MatriculaController {
     }
 
     @GetMapping
-    public List<ListarMatriculaDTO> listarMatriculas() {
-        return matriculaRepository.findAll().stream().map(
+    public Page<ListarMatriculaDTO> listarMatriculas(@PageableDefault(size = 30) Pageable pageable,
+                                                     @RequestParam(value = "cursoId", required = false) Long cursoId) {
+        if (cursoId != null) {
+            return matriculaRepository.findAllBycursoId(cursoId, pageable).map(
+                    matricula -> new ListarMatriculaDTO(matricula.getId(), matricula.getAluno().getNome(),
+                            matricula.getCurso().getNome(), matricula.getCurso().getTurno()));
+        }
+        return matriculaRepository.findAll(pageable).map(
                 matricula -> new ListarMatriculaDTO(matricula.getId(), matricula.getAluno().getNome(),
-                        matricula.getCurso().getNome(), matricula.getCurso().getTurno())).toList();
+                        matricula.getCurso().getNome(), matricula.getCurso().getTurno()));
     }
 }

@@ -28,4 +28,9 @@ A Matrícula de Cursos API é uma aplicação desenvolvida com Spring Boot que p
 - Maven
 - Insomnia
 
+## Estrutura do Projeto
+
+![tree](tree.png)
+
+
 
