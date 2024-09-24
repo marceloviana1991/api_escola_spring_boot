@@ -38,6 +38,11 @@ public class AlunoController {
     public void atualizarAluno(@RequestBody @Valid AtualizacaoAlunoDTO atualizacaoAlunoDTO) {
         Optional<Aluno> alunoOptional = alunoRepository.findById(atualizacaoAlunoDTO.id());
         alunoOptional.ifPresent(aluno -> aluno.atualizarInformacoes(atualizacaoAlunoDTO));
+    }
 
+    @DeleteMapping("/{id}")
+    @Transactional
+    public void excluirAluno(@PathVariable Long id) {
+        alunoRepository.deleteById(id);
     }
 }

@@ -8,15 +8,10 @@ A Matrícula de Cursos API é uma aplicação desenvolvida com Spring Boot que p
 
 ## Funcionalidades principais
 
- - **Cadastro de cursos:**
- - **Atualização de cursos:**
- - **Exclusão de cursos:** 
- - **Consulta de cursos:** 
- - **Cadastro de alunos:**
- - **Atualização de alunos:**
- - **Exclusão de alunos:** 
- - **Consulta de alunos:** 
- - **Criação de matrícula:** A matricula é gerada a partir de relacionamento de n para n, com cardinalidade mínima zero e zero, entre as entidades curso e aluno.
+- **endpoints de cursos** com métodos POST, GET, PUT e DELETE
+- **endpoints de alunos** com métodos POST, GET, PUT e DELETE
+- **endpoints de matrículas** com métodos POST, GET e DELETE
+As matriculas são geradas a partir de um relacionamento de n para n, com cardinalidade mínima de zero em ambos os lados, entre as entidades curso e aluno.
 
 ## Tecnologias Utilizadas
 

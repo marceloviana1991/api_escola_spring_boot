@@ -36,9 +36,15 @@ public class CursoController {
 
     @PutMapping
     @Transactional
-    public void atualizarCuso(@RequestBody @Valid AtualizacaoCursoDTO atualizacaoCursoDTO) {
+    public void atualizarCurso(@RequestBody @Valid AtualizacaoCursoDTO atualizacaoCursoDTO) {
         Optional<Curso> cursoOptional = cursoRepository.findById(atualizacaoCursoDTO.id());
         cursoOptional.ifPresent(curso -> curso.atualizarInformacoes(atualizacaoCursoDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public void excluirCurso(@PathVariable Long id) {
+        cursoRepository.deleteById(id);
     }
 
 }

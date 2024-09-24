@@ -51,4 +51,10 @@ public class MatriculaController {
                 matricula -> new ListagemMatriculaDTO(matricula.getId(), matricula.getAluno().getNome(),
                         matricula.getCurso().getNome(), matricula.getCurso().getTurno()));
     }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public void excluirMatricula(@PathVariable Long id) {
+        matriculaRepository.deleteById(id);
+    }
 }
