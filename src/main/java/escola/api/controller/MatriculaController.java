@@ -2,6 +2,7 @@ package escola.api.controller;
 
 import escola.api.dto.CadastroMatriculaDTO;
 import escola.api.dto.ListagemMatriculaDTO;
+import escola.api.dto.ResponseMatriculaDTO;
 import escola.api.model.Aluno;
 import escola.api.model.Curso;
 import escola.api.model.Matricula;
@@ -33,7 +34,7 @@ public class MatriculaController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<CadastroMatriculaDTO> cadastrarMatricula(@RequestBody @Valid CadastroMatriculaDTO cadastroMatriculaDTO,
+    public ResponseEntity<ResponseMatriculaDTO> cadastrarMatricula(@RequestBody @Valid CadastroMatriculaDTO cadastroMatriculaDTO,
                                                                    UriComponentsBuilder uriComponentsBuilder) {
         Optional<Curso> curso = cursoRepository.findById(cadastroMatriculaDTO.cursoId());
         Optional<Aluno> aluno = alunoRepository.findById(cadastroMatriculaDTO.alunoId());
@@ -42,7 +43,9 @@ public class MatriculaController {
             Matricula matricula = new Matricula(aluno.get(), curso.get());
             matriculaRepository.save(matricula);
             var uri = uriComponentsBuilder.path("/matriculas/{id}").buildAndExpand(matricula.getId()).toUri();
-            return ResponseEntity.created(uri).body(cadastroMatriculaDTO);
+            return ResponseEntity.created(uri).body(new ResponseMatriculaDTO(
+                    matricula.getId(), matricula.getAluno().getId(), matricula.getCurso().getId()
+            ));
         }
         return ResponseEntity.notFound().build();
     }
@@ -51,14 +54,16 @@ public class MatriculaController {
     public ResponseEntity<Page<ListagemMatriculaDTO>> listarMatriculas(@PageableDefault(size = 30) Pageable pageable,
                                                        @RequestParam(value = "cursoId", required = false) Long cursoId) {
         if (cursoId != null) {
-            Page<ListagemMatriculaDTO> listagemMatriculaDTOPage = matriculaRepository.findAllBycursoId(cursoId, pageable).map(
-                    matricula -> new ListagemMatriculaDTO(matricula.getId(), matricula.getAluno().getNome(),
-                            matricula.getCurso().getNome(), matricula.getCurso().getTurno()));
+            Page<ListagemMatriculaDTO> listagemMatriculaDTOPage = matriculaRepository.findAllBycursoId(cursoId, pageable)
+                    .map(matricula -> new ListagemMatriculaDTO(matricula.getId(), matricula.getAluno().getId(),
+                            matricula.getAluno().getNome(), matricula.getCurso().getId(), matricula.getCurso().getNome(),
+                            matricula.getCurso().getTurno()));
             return ResponseEntity.ok(listagemMatriculaDTOPage);
         }
-        Page<ListagemMatriculaDTO> listagemMatriculaDTOPage = matriculaRepository.findAll(pageable).map(
-                matricula -> new ListagemMatriculaDTO(matricula.getId(), matricula.getAluno().getNome(),
-                        matricula.getCurso().getNome(), matricula.getCurso().getTurno()));
+        Page<ListagemMatriculaDTO> listagemMatriculaDTOPage = matriculaRepository.findAll(pageable).map(matricula ->
+                new ListagemMatriculaDTO(matricula.getId(), matricula.getAluno().getId(),
+                matricula.getAluno().getNome(), matricula.getCurso().getId(), matricula.getCurso().getNome(),
+                matricula.getCurso().getTurno()));
         return ResponseEntity.ok(listagemMatriculaDTOPage);
     }
 
@@ -67,5 +72,15 @@ public class MatriculaController {
     public ResponseEntity<?> excluirMatricula(@PathVariable Long id) {
         matriculaRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ListagemMatriculaDTO> detalharMatricula(@PathVariable Long id) {
+        Optional<Matricula> matriculaOptional = matriculaRepository.findById(id);
+        return matriculaOptional.map(matricula -> ResponseEntity.ok(new ListagemMatriculaDTO(
+                matricula.getId(), matricula.getAluno().getId(),
+                matricula.getAluno().getNome(), matricula.getCurso().getId(),
+                matricula.getCurso().getNome(), matricula.getCurso().getTurno()
+        ))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

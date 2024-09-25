@@ -3,6 +3,7 @@ package escola.api.controller;
 import escola.api.dto.AtualizacaoAlunoDTO;
 import escola.api.dto.CadastroAlunoDTO;
 import escola.api.dto.ListagemAlunoDTO;
+import escola.api.dto.ResponseAlunoDTO;
 import escola.api.model.Aluno;
 import escola.api.repository.AlunoRepository;
 import jakarta.transaction.Transactional;
@@ -26,12 +27,12 @@ public class AlunoController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<CadastroAlunoDTO> cadastrarAluno(@RequestBody @Valid CadastroAlunoDTO cadastroAlunoDTO,
+    public ResponseEntity<ResponseAlunoDTO> cadastrarAluno(@RequestBody @Valid CadastroAlunoDTO cadastroAlunoDTO,
                                                            UriComponentsBuilder uriComponentsBuilder) {
         Aluno aluno = new Aluno(cadastroAlunoDTO);
         alunoRepository.save(aluno);
         var uri = uriComponentsBuilder.path("/alunos/{id}").buildAndExpand(aluno.getId()).toUri();
-        return ResponseEntity.created(uri).body(cadastroAlunoDTO);
+        return ResponseEntity.created(uri).body(new ResponseAlunoDTO(aluno.getId(), aluno.getNome()));
     }
 
     @GetMapping
@@ -42,10 +43,10 @@ public class AlunoController {
 
     @PutMapping
     @Transactional
-    public ResponseEntity<AtualizacaoAlunoDTO> atualizarAluno(@RequestBody @Valid AtualizacaoAlunoDTO atualizacaoAlunoDTO) {
+    public ResponseEntity<ResponseAlunoDTO> atualizarAluno(@RequestBody @Valid AtualizacaoAlunoDTO atualizacaoAlunoDTO) {
         Optional<Aluno> alunoOptional = alunoRepository.findById(atualizacaoAlunoDTO.id());
         alunoOptional.ifPresent(aluno -> aluno.atualizarInformacoes(atualizacaoAlunoDTO));
-        return ResponseEntity.ok(atualizacaoAlunoDTO);
+        return ResponseEntity.ok(new ResponseAlunoDTO(alunoOptional.get().getId(), alunoOptional.get().getNome()));
     }
 
     @DeleteMapping("/{id}")
@@ -53,5 +54,11 @@ public class AlunoController {
     public ResponseEntity<?> excluirAluno(@PathVariable Long id) {
         alunoRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ListagemAlunoDTO> detalharAluno(@PathVariable Long id) {
+        Optional<Aluno> alunoOptional = alunoRepository.findById(id);
+        return alunoOptional.map(aluno -> ResponseEntity.ok(new ListagemAlunoDTO(aluno.getId(), aluno.getNome()))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

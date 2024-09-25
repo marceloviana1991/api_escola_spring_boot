@@ -3,6 +3,7 @@ package escola.api.controller;
 import escola.api.dto.AtualizacaoCursoDTO;
 import escola.api.dto.CadastroCursoDTO;
 import escola.api.dto.ListagemCursoDTO;
+import escola.api.dto.ResponseCursoDTO;
 import escola.api.model.Curso;
 import escola.api.repository.CursoRepository;
 import jakarta.transaction.Transactional;
@@ -26,12 +27,14 @@ public class CursoController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<CadastroCursoDTO> cadastrarCurso(@RequestBody @Valid CadastroCursoDTO cadastroCursoDTO,
+    public ResponseEntity<ResponseCursoDTO> cadastrarCurso(@RequestBody @Valid CadastroCursoDTO cadastroCursoDTO,
                                                            UriComponentsBuilder uriComponentsBuilder) {
         Curso curso = new Curso(cadastroCursoDTO);
         cursoRepository.save(curso);
         var uri = uriComponentsBuilder.path("/cursos/{id}").buildAndExpand(curso.getId()).toUri();
-        return ResponseEntity.created(uri).body(cadastroCursoDTO);
+        return ResponseEntity.created(uri).body(new ResponseCursoDTO(
+                curso.getId(), curso.getNome(), curso.getTurno(),
+                curso.getDataInicio(), curso.getDataTermino()));
     }
 
     @GetMapping
@@ -43,10 +46,12 @@ public class CursoController {
 
     @PutMapping
     @Transactional
-    public ResponseEntity<AtualizacaoCursoDTO> atualizarCurso(@RequestBody @Valid AtualizacaoCursoDTO atualizacaoCursoDTO) {
+    public ResponseEntity<ResponseCursoDTO> atualizarCurso(@RequestBody @Valid AtualizacaoCursoDTO atualizacaoCursoDTO) {
         Optional<Curso> cursoOptional = cursoRepository.findById(atualizacaoCursoDTO.id());
         cursoOptional.ifPresent(curso -> curso.atualizarInformacoes(atualizacaoCursoDTO));
-        return ResponseEntity.ok(atualizacaoCursoDTO);
+        return ResponseEntity.ok(new ResponseCursoDTO(
+                cursoOptional.get().getId(), cursoOptional.get().getNome(), cursoOptional.get().getTurno(),
+                cursoOptional.get().getDataInicio(), cursoOptional.get().getDataTermino()));
     }
 
     @DeleteMapping("/{id}")
@@ -54,6 +59,13 @@ public class CursoController {
     public ResponseEntity<?> excluirCurso(@PathVariable Long id) {
         cursoRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ListagemCursoDTO> detalharCurso(@PathVariable Long id) {
+        Optional<Curso> cursoOptional = cursoRepository.findById(id);
+        return cursoOptional.map(curso -> ResponseEntity.ok(new ListagemCursoDTO(curso.getId(), curso.getNome(),
+                curso.getTurno(), curso.getDataInicio(), curso.getDataTermino()))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
 }
