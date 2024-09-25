@@ -32,15 +32,12 @@ public class CursoController {
         Curso curso = new Curso(cadastroCursoDTO);
         cursoRepository.save(curso);
         var uri = uriComponentsBuilder.path("/cursos/{id}").buildAndExpand(curso.getId()).toUri();
-        return ResponseEntity.created(uri).body(new ResponseCursoDTO(
-                curso.getId(), curso.getNome(), curso.getTurno(),
-                curso.getDataInicio(), curso.getDataTermino()));
+        return ResponseEntity.created(uri).body(new ResponseCursoDTO(curso));
     }
 
     @GetMapping
     public ResponseEntity<Page<ListagemCursoDTO>> listarCursos(@PageableDefault(size = 30) Pageable pageable) {
-        Page<ListagemCursoDTO> listagemCursoDTOPage = cursoRepository.findAll(pageable).map(curso -> new ListagemCursoDTO(
-                curso.getId(), curso.getNome(), curso.getTurno(), curso.getDataInicio(), curso.getDataTermino()));
+        Page<ListagemCursoDTO> listagemCursoDTOPage = cursoRepository.findAll(pageable).map(ListagemCursoDTO::new);
         return ResponseEntity.ok(listagemCursoDTOPage);
     }
 
@@ -48,10 +45,12 @@ public class CursoController {
     @Transactional
     public ResponseEntity<ResponseCursoDTO> atualizarCurso(@RequestBody @Valid AtualizacaoCursoDTO atualizacaoCursoDTO) {
         Optional<Curso> cursoOptional = cursoRepository.findById(atualizacaoCursoDTO.id());
-        cursoOptional.ifPresent(curso -> curso.atualizarInformacoes(atualizacaoCursoDTO));
-        return ResponseEntity.ok(new ResponseCursoDTO(
-                cursoOptional.get().getId(), cursoOptional.get().getNome(), cursoOptional.get().getTurno(),
-                cursoOptional.get().getDataInicio(), cursoOptional.get().getDataTermino()));
+        if (cursoOptional.isPresent()) {
+            cursoOptional.get().atualizarInformacoes(atualizacaoCursoDTO);
+            return ResponseEntity.ok(new ResponseCursoDTO(cursoOptional.get()));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -64,8 +63,7 @@ public class CursoController {
     @GetMapping("/{id}")
     public ResponseEntity<ListagemCursoDTO> detalharCurso(@PathVariable Long id) {
         Optional<Curso> cursoOptional = cursoRepository.findById(id);
-        return cursoOptional.map(curso -> ResponseEntity.ok(new ListagemCursoDTO(curso.getId(), curso.getNome(),
-                curso.getTurno(), curso.getDataInicio(), curso.getDataTermino()))).orElseGet(() -> ResponseEntity.notFound().build());
+        return cursoOptional.map(curso -> ResponseEntity.ok(new ListagemCursoDTO(curso))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
 }

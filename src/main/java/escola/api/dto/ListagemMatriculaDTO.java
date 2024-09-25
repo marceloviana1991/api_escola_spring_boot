@@ -1,5 +1,6 @@
 package escola.api.dto;
 
+import escola.api.model.Matricula;
 import escola.api.model.Turno;
 
 public record ListagemMatriculaDTO(
@@ -10,4 +11,13 @@ public record ListagemMatriculaDTO(
         String nomeCurso,
         Turno turnoCurso
 ) {
+
+    public ListagemMatriculaDTO(Matricula matricula) {
+        this(matricula.getId(),
+                matricula.getAluno().getId(),
+                matricula.getAluno().getNome(),
+                matricula.getCurso().getId(),
+                matricula.getCurso().getNome(),
+                matricula.getCurso().getTurno());
+    }
 }

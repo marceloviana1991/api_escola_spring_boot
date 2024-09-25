@@ -43,9 +43,7 @@ public class MatriculaController {
             Matricula matricula = new Matricula(aluno.get(), curso.get());
             matriculaRepository.save(matricula);
             var uri = uriComponentsBuilder.path("/matriculas/{id}").buildAndExpand(matricula.getId()).toUri();
-            return ResponseEntity.created(uri).body(new ResponseMatriculaDTO(
-                    matricula.getId(), matricula.getAluno().getId(), matricula.getCurso().getId()
-            ));
+            return ResponseEntity.created(uri).body(new ResponseMatriculaDTO(matricula));
         }
         return ResponseEntity.notFound().build();
     }
@@ -55,15 +53,10 @@ public class MatriculaController {
                                                        @RequestParam(value = "cursoId", required = false) Long cursoId) {
         if (cursoId != null) {
             Page<ListagemMatriculaDTO> listagemMatriculaDTOPage = matriculaRepository.findAllBycursoId(cursoId, pageable)
-                    .map(matricula -> new ListagemMatriculaDTO(matricula.getId(), matricula.getAluno().getId(),
-                            matricula.getAluno().getNome(), matricula.getCurso().getId(), matricula.getCurso().getNome(),
-                            matricula.getCurso().getTurno()));
+                    .map(ListagemMatriculaDTO::new);
             return ResponseEntity.ok(listagemMatriculaDTOPage);
         }
-        Page<ListagemMatriculaDTO> listagemMatriculaDTOPage = matriculaRepository.findAll(pageable).map(matricula ->
-                new ListagemMatriculaDTO(matricula.getId(), matricula.getAluno().getId(),
-                matricula.getAluno().getNome(), matricula.getCurso().getId(), matricula.getCurso().getNome(),
-                matricula.getCurso().getTurno()));
+        Page<ListagemMatriculaDTO> listagemMatriculaDTOPage = matriculaRepository.findAll(pageable).map(ListagemMatriculaDTO::new);
         return ResponseEntity.ok(listagemMatriculaDTOPage);
     }
 
@@ -77,10 +70,7 @@ public class MatriculaController {
     @GetMapping("/{id}")
     public ResponseEntity<ListagemMatriculaDTO> detalharMatricula(@PathVariable Long id) {
         Optional<Matricula> matriculaOptional = matriculaRepository.findById(id);
-        return matriculaOptional.map(matricula -> ResponseEntity.ok(new ListagemMatriculaDTO(
-                matricula.getId(), matricula.getAluno().getId(),
-                matricula.getAluno().getNome(), matricula.getCurso().getId(),
-                matricula.getCurso().getNome(), matricula.getCurso().getTurno()
-        ))).orElseGet(() -> ResponseEntity.notFound().build());
+        return matriculaOptional.map(matricula -> ResponseEntity.ok(new ListagemMatriculaDTO(matricula)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

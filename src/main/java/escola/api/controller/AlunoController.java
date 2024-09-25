@@ -32,12 +32,12 @@ public class AlunoController {
         Aluno aluno = new Aluno(cadastroAlunoDTO);
         alunoRepository.save(aluno);
         var uri = uriComponentsBuilder.path("/alunos/{id}").buildAndExpand(aluno.getId()).toUri();
-        return ResponseEntity.created(uri).body(new ResponseAlunoDTO(aluno.getId(), aluno.getNome()));
+        return ResponseEntity.created(uri).body(new ResponseAlunoDTO(aluno));
     }
 
     @GetMapping
     public ResponseEntity<Page<ListagemAlunoDTO>> listarAlunos(@PageableDefault(size = 30) Pageable pageable) {
-        Page<ListagemAlunoDTO> listagemAlunoDTOPage = alunoRepository.findAll(pageable).map(aluno -> new ListagemAlunoDTO(aluno.getId(), aluno.getNome()));
+        Page<ListagemAlunoDTO> listagemAlunoDTOPage = alunoRepository.findAll(pageable).map(ListagemAlunoDTO::new);
         return ResponseEntity.ok(listagemAlunoDTOPage);
     }
 
@@ -45,8 +45,12 @@ public class AlunoController {
     @Transactional
     public ResponseEntity<ResponseAlunoDTO> atualizarAluno(@RequestBody @Valid AtualizacaoAlunoDTO atualizacaoAlunoDTO) {
         Optional<Aluno> alunoOptional = alunoRepository.findById(atualizacaoAlunoDTO.id());
-        alunoOptional.ifPresent(aluno -> aluno.atualizarInformacoes(atualizacaoAlunoDTO));
-        return ResponseEntity.ok(new ResponseAlunoDTO(alunoOptional.get().getId(), alunoOptional.get().getNome()));
+        if (alunoOptional.isPresent()) {
+            alunoOptional.get().atualizarInformacoes(atualizacaoAlunoDTO);
+            return ResponseEntity.ok(new ResponseAlunoDTO(alunoOptional.get()));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -59,6 +63,6 @@ public class AlunoController {
     @GetMapping("/{id}")
     public ResponseEntity<ListagemAlunoDTO> detalharAluno(@PathVariable Long id) {
         Optional<Aluno> alunoOptional = alunoRepository.findById(id);
-        return alunoOptional.map(aluno -> ResponseEntity.ok(new ListagemAlunoDTO(aluno.getId(), aluno.getNome()))).orElseGet(() -> ResponseEntity.notFound().build());
+        return alunoOptional.map(aluno -> ResponseEntity.ok(new ListagemAlunoDTO(aluno))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
