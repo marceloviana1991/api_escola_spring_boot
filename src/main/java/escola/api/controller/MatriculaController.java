@@ -63,14 +63,14 @@ public class MatriculaController {
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<?> excluirMatricula(@PathVariable Long id) {
-        matriculaRepository.deleteById(id);
+        Matricula matricula = matriculaRepository.getReferenceById(id);
+        matriculaRepository.delete(matricula);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ListagemMatriculaDTO> detalharMatricula(@PathVariable Long id) {
-        Optional<Matricula> matriculaOptional = matriculaRepository.findById(id);
-        return matriculaOptional.map(matricula -> ResponseEntity.ok(new ListagemMatriculaDTO(matricula)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        Matricula matricula = matriculaRepository.getReferenceById(id);
+        return ResponseEntity.ok(new ListagemMatriculaDTO(matricula));
     }
 }

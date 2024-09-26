@@ -44,26 +44,23 @@ public class CursoController {
     @PutMapping
     @Transactional
     public ResponseEntity<ResponseCursoDTO> atualizarCurso(@RequestBody @Valid AtualizacaoCursoDTO atualizacaoCursoDTO) {
-        Optional<Curso> cursoOptional = cursoRepository.findById(atualizacaoCursoDTO.id());
-        if (cursoOptional.isPresent()) {
-            cursoOptional.get().atualizarInformacoes(atualizacaoCursoDTO);
-            return ResponseEntity.ok(new ResponseCursoDTO(cursoOptional.get()));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Curso curso = cursoRepository.getReferenceById(atualizacaoCursoDTO.id());
+        curso.atualizarInformacoes(atualizacaoCursoDTO);
+        return ResponseEntity.ok(new ResponseCursoDTO(curso));
     }
 
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<?> excluirCurso(@PathVariable Long id) {
-        cursoRepository.deleteById(id);
+        Curso curso = cursoRepository.getReferenceById(id);
+        cursoRepository.delete(curso);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ListagemCursoDTO> detalharCurso(@PathVariable Long id) {
-        Optional<Curso> cursoOptional = cursoRepository.findById(id);
-        return cursoOptional.map(curso -> ResponseEntity.ok(new ListagemCursoDTO(curso))).orElseGet(() -> ResponseEntity.notFound().build());
+        Curso curso = cursoRepository.getReferenceById(id);
+        return ResponseEntity.ok(new ListagemCursoDTO(curso));
     }
 
 }

@@ -44,25 +44,22 @@ public class AlunoController {
     @PutMapping
     @Transactional
     public ResponseEntity<ResponseAlunoDTO> atualizarAluno(@RequestBody @Valid AtualizacaoAlunoDTO atualizacaoAlunoDTO) {
-        Optional<Aluno> alunoOptional = alunoRepository.findById(atualizacaoAlunoDTO.id());
-        if (alunoOptional.isPresent()) {
-            alunoOptional.get().atualizarInformacoes(atualizacaoAlunoDTO);
-            return ResponseEntity.ok(new ResponseAlunoDTO(alunoOptional.get()));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Aluno aluno = alunoRepository.getReferenceById(atualizacaoAlunoDTO.id());
+        aluno.atualizarInformacoes(atualizacaoAlunoDTO);
+        return ResponseEntity.ok(new ResponseAlunoDTO(aluno));
     }
 
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<?> excluirAluno(@PathVariable Long id) {
-        alunoRepository.deleteById(id);
+        Aluno aluno = alunoRepository.getReferenceById(id);
+        alunoRepository.delete(aluno);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ListagemAlunoDTO> detalharAluno(@PathVariable Long id) {
-        Optional<Aluno> alunoOptional = alunoRepository.findById(id);
-        return alunoOptional.map(aluno -> ResponseEntity.ok(new ListagemAlunoDTO(aluno))).orElseGet(() -> ResponseEntity.notFound().build());
+        Aluno aluno = alunoRepository.getReferenceById(id);
+        return ResponseEntity.ok(new ListagemAlunoDTO(aluno));
     }
 }
