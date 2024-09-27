@@ -23,6 +23,8 @@ As matriculas são geradas a partir de um relacionamento de n para n, com cardin
 - JPA/Hibernate
 - Maven
 - Insomnia
+- Security
+- Auth0/ jwt
 
 ## Estrutura do Projeto
 
