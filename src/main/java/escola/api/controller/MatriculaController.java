@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -49,14 +50,15 @@ public class MatriculaController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ListagemMatriculaDTO>> listarMatriculas(@PageableDefault(size = 30) Pageable pageable,
-                                                       @RequestParam(value = "cursoId", required = false) Long cursoId) {
+    public ResponseEntity<List<ListagemMatriculaDTO>> listarMatriculas(@PageableDefault(size = 30) Pageable pageable,
+                                                                       @RequestParam(value = "cursoId", required = false) Long cursoId) {
         if (cursoId != null) {
-            Page<ListagemMatriculaDTO> listagemMatriculaDTOPage = matriculaRepository.findAllBycursoId(cursoId, pageable)
-                    .map(ListagemMatriculaDTO::new);
+            List<ListagemMatriculaDTO> listagemMatriculaDTOPage = matriculaRepository.findAllBycursoId(cursoId, pageable)
+                    .stream().map(ListagemMatriculaDTO::new).toList();
             return ResponseEntity.ok(listagemMatriculaDTOPage);
         }
-        Page<ListagemMatriculaDTO> listagemMatriculaDTOPage = matriculaRepository.findAll(pageable).map(ListagemMatriculaDTO::new);
+        List<ListagemMatriculaDTO> listagemMatriculaDTOPage = matriculaRepository.findAll(pageable).stream()
+                .map(ListagemMatriculaDTO::new).toList();
         return ResponseEntity.ok(listagemMatriculaDTOPage);
     }
 

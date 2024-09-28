@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/alunos")
 public class AlunoController {
@@ -34,8 +36,8 @@ public class AlunoController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ListagemAlunoDTO>> listarAlunos(@PageableDefault(size = 30) Pageable pageable) {
-        Page<ListagemAlunoDTO> listagemAlunoDTOPage = alunoRepository.findAll(pageable).map(ListagemAlunoDTO::new);
+    public ResponseEntity<List<ListagemAlunoDTO>> listarAlunos(@PageableDefault(size = 30) Pageable pageable) {
+        List<ListagemAlunoDTO> listagemAlunoDTOPage = alunoRepository.findAll(pageable).stream().map(ListagemAlunoDTO::new).toList();
         return ResponseEntity.ok(listagemAlunoDTOPage);
     }
 

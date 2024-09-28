@@ -9,13 +9,13 @@ import escola.api.repository.CursoRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -36,8 +36,8 @@ public class CursoController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ListagemCursoDTO>> listarCursos(@PageableDefault(size = 30) Pageable pageable) {
-        Page<ListagemCursoDTO> listagemCursoDTOPage = cursoRepository.findAll(pageable).map(ListagemCursoDTO::new);
+    public ResponseEntity<List<ListagemCursoDTO>> listarCursos(@PageableDefault(size = 30) Pageable pageable) {
+        List<ListagemCursoDTO> listagemCursoDTOPage = cursoRepository.findAll(pageable).stream().map(ListagemCursoDTO::new).toList();
         return ResponseEntity.ok(listagemCursoDTOPage);
     }
 
